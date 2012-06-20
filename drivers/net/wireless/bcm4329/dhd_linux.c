@@ -1976,6 +1976,8 @@ dhd_open(struct net_device *net)
 	dhd->pub.up = 1;
 
 	OLD_MOD_INC_USE_COUNT;
+
+	dhd_os_wake_unlock(&dhd->pub);
 	return 0;
 }
 
