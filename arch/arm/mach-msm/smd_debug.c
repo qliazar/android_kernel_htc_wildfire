@@ -57,7 +57,7 @@ struct mem_sleep_stat_attr {
 
 struct kobject *sleep_stat_kobj;
 
-static ssize_t show_mem_sleep_stat_attr(struct device *dev,
+static ssize_t __maybe_unused show_mem_sleep_stat_attr(struct device *dev,
 						struct mem_sleep_stat_attr *attr,
 						char *buf);
 
@@ -70,7 +70,7 @@ struct smem_negate_client {
 
 struct mutex mem_sleep_stat_lock;
 static struct smem_sleep_stat *sleep_stat;
-static struct smem_sleep_stat *get_smem_sleep_stat(void)
+static struct smem_sleep_stat * __maybe_unused get_smem_sleep_stat(void)
 {
 #if CONFIG_SMD_OFFSET_TCXO_STAT
 	return (struct smem_sleep_stat *)
@@ -106,7 +106,7 @@ static void print_sleep_stat(int flag)
 }
 
 static struct smem_negate_client *negate_client_stat;
-static struct smem_negate_client *get_smem_negate_client_stat(void)
+static struct smem_negate_client * __maybe_unused get_smem_negate_client_stat(void)
 {
 #if CONFIG_SMD_OFFSET_NEGATE_CLIENT_STAT
 	return (struct smem_negate_client *)
@@ -161,7 +161,7 @@ static int sleep_stat_suspend_notifier(struct notifier_block *nb,
 	}
 }
 
-static struct notifier_block sleep_stat_notif_block = {
+static struct notifier_block __maybe_unused sleep_stat_notif_block = {
 	.notifier_call = sleep_stat_suspend_notifier,
 };
 
@@ -175,7 +175,7 @@ static void sleep_stat_late_resume(struct early_suspend *handler)
 	print_sleep_stat(F_SCREEN_ON);
 }
 
-static struct early_suspend sleep_stat_screen_hdl = {
+static struct early_suspend __maybe_unused sleep_stat_screen_hdl = {
 	.suspend = sleep_stat_early_suspend,
 	.resume = sleep_stat_late_resume,
 };

@@ -1,3 +1,7 @@
+CFLAGS_smd_debug.o += -Wno-error
+ccflags-y += -w
+
+
 obj-y += io.o dma.o memory.o
 
 ifdef CONFIG_ARCH_MSM8X60
