@@ -84,7 +84,7 @@ static void free(void *where)
 #define large_malloc(a) vmalloc(a)
 #define large_free(a) vfree(a)
 
-static void(*error)(char *m);
+static void (*error)(char *m) __maybe_unused;
 #define set_error_fn(x) error = x;
 
 #define INIT __init
