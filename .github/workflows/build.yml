@@ -1,0 +1,29 @@
+name: Kernel Build
+
+on: 
+  workflow_dispatch:
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Dependencies
+        run: |
+          sudo apt update 
+          sudo apt install -y bc bison build-essential ccache curl erofs-utils flex g++-multilib gcc-multilib git git-lfs gnupg gperf imagemagick \
+          kmod protobuf-compiler python3-protobuf lib32readline-dev \
+          lib32z1-dev libdw-dev libelf-dev libgnutls28-dev lz4 libsdl1.2-dev libssl-dev libxml2 \
+          libxml2-utils lzop pngcrush \
+          rsync schedtool squashfs-tools xsltproc xxd zip zlib1g-dev
+      - name: Build Kernel
+        run: |
+          mkdir dist
+          sh build_kernel.sh
+          
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kernel
+          path: dist/zImage
+        
+  
