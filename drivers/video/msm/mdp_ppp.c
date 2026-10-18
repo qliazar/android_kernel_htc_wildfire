@@ -29,7 +29,7 @@
 
 #define PPP_DUMP_BLITS 0
 
-#define PPP_DEBUG_MSGS 1
+#define PPP_DEBUG_MSGS 0
 #if PPP_DEBUG_MSGS
 #define DLOG(fmt,args...) \
 	do { printk(KERN_INFO "[%s:%s:%d] "fmt, __FILE__, __func__, \
