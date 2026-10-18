@@ -43,7 +43,7 @@ extern void start_drawing_late_resume(struct early_suspend *h);
 static void msmfb_resume_handler(struct early_suspend *h);
 static void msmfb_resume(struct work_struct *work);
 
-#define MSMFB_DEBUG 1
+#define MSMFB_DEBUG 0
 #ifdef CONFIG_FB_MSM_LOGO
 #define INIT_IMAGE_FILE "/logo.rle"
 extern int load_565rle_image(char *filename);
@@ -341,15 +341,15 @@ restart:
 			    sleeping == UPDATING) {
 		int ret;
 		spin_unlock_irqrestore(&msmfb->update_lock, irq_flags);
-		/* Shorten delay time when apply vsync recover mechanism*/
+		/* Shorten delay time when waiting for frame completion */
 		if(panel->recover_vsync)
 			ret = wait_event_interruptible_timeout(msmfb->frame_wq,
 				msmfb->frame_done == msmfb->frame_requested &&
-				msmfb->sleeping != UPDATING, HZ/3);
+				msmfb->sleeping != UPDATING, HZ/4);
 		else
 			ret = wait_event_interruptible_timeout(msmfb->frame_wq,
 				msmfb->frame_done == msmfb->frame_requested &&
-				msmfb->sleeping != UPDATING, 5 * HZ);
+				msmfb->sleeping != UPDATING, HZ/3);
 
 		if (ret <= 0 && (msmfb->frame_requested != msmfb->frame_done ||
 				 msmfb->sleeping == UPDATING)) {
@@ -1051,6 +1051,28 @@ static int msmfb_ioctl(struct fb_info *p, unsigned int cmd, unsigned long arg)
 	return ret;
 }
 
+static int msmfb_mmap(struct fb_info *info, struct vm_area_struct *vma)
+{
+	unsigned long start = info->fix.smem_start;
+	u32 len = PAGE_ALIGN((start & ~PAGE_MASK) + info->fix.smem_len);
+	unsigned long off = vma->vm_pgoff << PAGE_SHIFT;
+
+	if (off >= len)
+		return -EINVAL;
+
+	/*
+	 * Enable ARM write-combining on the framebuffer memory.
+	 * This allows the ARM11 core to burst writes to the screen buffer
+	 * instead of doing slow, uncached 16/32-bit memory writes, drastically
+	 * speeding up software rendering and 2D UI composition.
+	 */
+	vma->vm_page_prot = pgprot_writecombine(vma->vm_page_prot);
+	vma->vm_flags |= VM_IO | VM_RESERVED;
+
+	return remap_pfn_range(vma, vma->vm_start, (start >> PAGE_SHIFT) + vma->vm_pgoff,
+			       vma->vm_end - vma->vm_start, vma->vm_page_prot);
+}
+
 static struct fb_ops msmfb_ops = {
 	.owner = THIS_MODULE,
 	.fb_open = msmfb_open,
@@ -1061,6 +1083,7 @@ static struct fb_ops msmfb_ops = {
 	.fb_fillrect = msmfb_fillrect,
 	.fb_copyarea = msmfb_copyarea,
 	.fb_imageblit = msmfb_imageblit,
+	.fb_mmap = msmfb_mmap,
 	.fb_ioctl = msmfb_ioctl,
 };
 
