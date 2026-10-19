@@ -218,7 +218,7 @@ static int msmfb_start_dma(struct msmfb_info *msmfb)
 	spin_lock_irqsave(&msmfb->update_lock, irq_flags);
 	time_since_request = ktime_to_ns(ktime_sub(ktime_get(),
 			     msmfb->vsync_request_time));
-	if (time_since_request > 20 * NSEC_PER_MSEC) {
+	if (0 && time_since_request > 50 * NSEC_PER_MSEC) {
 		uint32_t us;
 		us = do_div(time_since_request, NSEC_PER_MSEC) / NSEC_PER_USEC;
 		PR_DISP_WARN("msmfb_start_dma %lld.%03u ms after vsync "
@@ -345,11 +345,11 @@ restart:
 		if(panel->recover_vsync)
 			ret = wait_event_interruptible_timeout(msmfb->frame_wq,
 				msmfb->frame_done == msmfb->frame_requested &&
-				msmfb->sleeping != UPDATING, HZ/4);
+				msmfb->sleeping != UPDATING, HZ/15);
 		else
 			ret = wait_event_interruptible_timeout(msmfb->frame_wq,
 				msmfb->frame_done == msmfb->frame_requested &&
-				msmfb->sleeping != UPDATING, HZ/3);
+				msmfb->sleeping != UPDATING, HZ/10);
 
 		if (ret <= 0 && (msmfb->frame_requested != msmfb->frame_done ||
 				 msmfb->sleeping == UPDATING)) {
@@ -430,7 +430,7 @@ restart:
 	} else {
 		if (!hrtimer_active(&msmfb->fake_vsync)) {
 			hrtimer_start(&msmfb->fake_vsync,
-				      ktime_set(0, NSEC_PER_SEC/60),
+				      ktime_set(0, NSEC_PER_SEC/65),
 				      HRTIMER_MODE_REL);
 		}
 	}

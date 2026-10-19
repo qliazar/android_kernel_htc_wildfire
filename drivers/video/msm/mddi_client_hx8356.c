@@ -207,7 +207,6 @@ static irqreturn_t himax_vsync_interrupt(int irq, void *data)
 
 	if (atomic_dec_and_test(&panel->frame_counter)) {
 		schedule_work(&panel->adjust_panel_work);
-		return IRQ_HANDLED;
 	}
 
 	if (panel->fb_callback  && atomic_read(&panel->frame_counter) > 0) {
