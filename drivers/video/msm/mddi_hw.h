@@ -129,7 +129,7 @@
 #if defined (CONFIG_ARCH_QSD8X50) || defined (CONFIG_ARCH_MSM7X30)
 #define MDDI_HOST_TA2_LEN       0x001a
 #else
-#define MDDI_HOST_TA2_LEN       0x000c
+#define MDDI_HOST_TA2_LEN       0x0004
 #endif
 
 #if defined (CONFIG_ARCH_QSD8X50)

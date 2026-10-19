@@ -414,9 +414,9 @@ static uint16_t mddi_init_registers(struct mddi_info *mddi)
 	if (mddi->type == MSM_MDP_MDDI_TYPE_II)
 		mddi_writel(0x00C8, TA1_LEN);
 	else
-		mddi_writel(0x0005, TA1_LEN);
+		mddi_writel(0x0002, TA1_LEN); /* reduced turnaround 1 */
 	mddi_writel(MDDI_HOST_TA2_LEN, TA2_LEN);
-	mddi_writel(0x0014, DISP_WAKE); /* faster link wakeup counter */
+	mddi_writel(0x0008, DISP_WAKE); /* instantaneous link wakeup */ /* faster link wakeup counter */
 	mddi_writel(MDDI_HOST_REV_RATE_DIV, REV_RATE_DIV);
 	if (mddi->type == MSM_MDP_MDDI_TYPE_II)
 		mddi_writel(0x01, SF_LEN_CTL_REG);

@@ -370,7 +370,7 @@ buzz_mddi_power_client(struct msm_mddi_client_data *cdata, int on)
                 hr_msleep(10);
 
                 gpio_set_value(BUZZ_MDDI_RSTz, 1);
-                hr_msleep(50);
+                hr_msleep(15);
 	} else {
 		B("buzz suspend");
                 on_off = 1;
@@ -527,7 +527,7 @@ static struct msm_mddi_bridge_platform_data himax_client_data = {
 };
 
 static struct msm_mddi_platform_data buzz_pdata = {
-	.clk_rate = 120000000,		/* Overclocked MDDI frequency: 120MHz */
+	.clk_rate = 140000000,		/* Overclocked MDDI frequency: 120MHz */
 	.power_client = buzz_mddi_power_client,
 	.fixup = buzz_fixup,
 	.fb_resource = resources_msm_fb,
@@ -585,7 +585,7 @@ int __init buzz_panel_init(void)
 
 	if(panel_id == PANEL_TPO) {
 		bridge_data->adjust = buzz_tpo_panel_adjust;
-		buzz_pdata.clk_rate = 96000000;	/* Overclocked TPO MDDI: 96MHz */
+		buzz_pdata.clk_rate = 110000000;	/* Overclocked TPO MDDI: 96MHz */
 	}
 	else
 		bridge_data->adjust = buzz_auo_panel_adjust;
