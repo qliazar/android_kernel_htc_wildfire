@@ -119,8 +119,8 @@ static struct mddi_table buzz_init_tb[] = {
 
 static struct mddi_table buzz_standby_tb[] = {
 	{0x95, 0x0000, 0},
-	{0x26, 0x0038, 50},
-        {0x26, 0x0020, 50},
+	{0x26, 0x0038, 10},
+        {0x26, 0x0020, 10},
 };
 
 static struct mddi_table buzz_tpo_adjust_tb[] = {
@@ -527,7 +527,7 @@ static struct msm_mddi_bridge_platform_data himax_client_data = {
 };
 
 static struct msm_mddi_platform_data buzz_pdata = {
-	.clk_rate = 83000000,		/*default MDDI frequenct*/
+	.clk_rate = 120000000,		/* Overclocked MDDI frequency: 120MHz */
 	.power_client = buzz_mddi_power_client,
 	.fixup = buzz_fixup,
 	.fb_resource = resources_msm_fb,
@@ -585,7 +585,7 @@ int __init buzz_panel_init(void)
 
 	if(panel_id == PANEL_TPO) {
 		bridge_data->adjust = buzz_tpo_panel_adjust;
-		buzz_pdata.clk_rate = 73846000;
+		buzz_pdata.clk_rate = 96000000;	/* Overclocked TPO MDDI: 96MHz */
 	}
 	else
 		bridge_data->adjust = buzz_auo_panel_adjust;

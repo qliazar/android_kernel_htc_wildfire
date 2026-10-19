@@ -119,7 +119,7 @@ static void himax_wait_vsync(struct msm_panel_data *panel_data)
 	}
 
 	if (wait_event_timeout(himax_vsync_wait, panel->himax_got_int,
-				HZ/2) == 0)
+				HZ/5) == 0)
 		PR_DISP_ERR("timeout waiting for VSYNC\n");
 
 	panel->himax_got_int = 0;

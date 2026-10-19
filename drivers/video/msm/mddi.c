@@ -375,7 +375,7 @@ static long mddi_wait_interrupt_timeout(struct mddi_info *mddi,
 
 static void mddi_wait_interrupt(struct mddi_info *mddi, uint32_t intmask)
 {
-	if (mddi_wait_interrupt_timeout(mddi, intmask, HZ/10) == 0)
+	if (mddi_wait_interrupt_timeout(mddi, intmask, HZ/20) == 0)
 		printk(KERN_INFO KERN_ERR "mddi_wait_interrupt %d, timeout "
 		       "waiting for %x, INT = %x, STAT = %x gotint = %x\n",
 		       current->pid, intmask, mddi_readl(INT), mddi_readl(STAT),
@@ -416,7 +416,7 @@ static uint16_t mddi_init_registers(struct mddi_info *mddi)
 	else
 		mddi_writel(0x0005, TA1_LEN);
 	mddi_writel(MDDI_HOST_TA2_LEN, TA2_LEN);
-	mddi_writel(0x003C, DISP_WAKE); /* wakeup counter */
+	mddi_writel(0x0014, DISP_WAKE); /* faster link wakeup counter */
 	mddi_writel(MDDI_HOST_REV_RATE_DIV, REV_RATE_DIV);
 	if (mddi->type == MSM_MDP_MDDI_TYPE_II)
 		mddi_writel(0x01, SF_LEN_CTL_REG);
