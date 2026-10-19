@@ -90,7 +90,7 @@ static void mdp_do_standby_timer(unsigned long data)
 		mdp->state |= MDP_STATE_STANDBY;
 	} else {
 		mod_timer(&mdp->standby_timer,
-			jiffies + msecs_to_jiffies(500));
+			jiffies + msecs_to_jiffies(1200));
 	}
 }
 
@@ -113,7 +113,7 @@ static int locked_enable_mdp_irq(struct mdp_info *mdp, uint32_t mask)
 			clk_set_rate(mdp->ebi1_clk, 153000000);
 #else
 			/* Boost EBI1 memory bus throughput for MDP blits & DMA */
-			clk_set_rate(mdp->ebi1_clk, 160000000);
+			clk_set_rate(mdp->ebi1_clk, 200000000); /* Overclocked EBI1 bus clock: 200MHz */
 #endif
 			mdp->state &= ~MDP_STATE_STANDBY;
 		} else {
@@ -166,7 +166,7 @@ static int locked_disable_mdp_irq(struct mdp_info *mdp, uint32_t mask)
 			clk_disable(mdp->clk);
 		if (!(mdp->state & MDP_STATE_STANDBY))
 			mod_timer(&mdp->standby_timer,
-				jiffies + msecs_to_jiffies(500));
+				jiffies + msecs_to_jiffies(1200));
 	}
 	return 0;
 }
@@ -1238,7 +1238,7 @@ int mdp_probe(struct platform_device *pdev)
 	}
 
 	/* Overclock MDP hardware pipeline to 160MHz */
-	clk_set_rate(mdp->clk, 160000000);
+	clk_set_rate(mdp->clk, 192000000); /* Overclocked MDP core clock: 192MHz */
 
         mdp->ebi1_clk = clk_get(NULL, "ebi1_clk");
         if (IS_ERR(mdp->ebi1_clk)) {
@@ -1248,7 +1248,7 @@ int mdp_probe(struct platform_device *pdev)
         }
 
 	/* Request high-throughput EBI1 rate for initial panel init */
-	clk_set_rate(mdp->ebi1_clk, 160000000);
+	clk_set_rate(mdp->ebi1_clk, 200000000);
 
 	ret = request_irq(mdp->irq, mdp_isr, IRQF_DISABLED, "msm_mdp", mdp);
 	if (ret)
