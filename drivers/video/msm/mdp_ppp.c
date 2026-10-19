@@ -208,6 +208,11 @@ static void blit_convert(struct mdp_blit_req *req, struct ppp_regs *regs)
 {
 	if (req->src.format == req->dst.format)
 		return;
+
+	/* Enable hardware dithering when rendering into 16-bit RGB565 */
+	if (req->dst.format == MDP_RGB_565)
+		regs->op |= PPP_OP_DITHER_EN;
+
 	if (IS_RGB(req->src.format) && IS_YCRCB(req->dst.format)) {
 		regs->op |= PPP_OP_CONVERT_RGB2YCBCR | PPP_OP_CONVERT_ON;
 #ifdef CONFIG_MSM_MDP31
@@ -317,14 +322,17 @@ static int blit_scale(struct mdp_info *mdp, struct mdp_blit_req *req,
 {
 	struct mdp_rect dst_rect;
 
-	memcpy(&dst_rect, &req->dst_rect, sizeof(dst_rect));
-	if (req->flags & MDP_ROT_90) {
+	if (unlikely(req->flags & MDP_ROT_90)) {
+		dst_rect.x = req->dst_rect.x;
+		dst_rect.y = req->dst_rect.y;
 		dst_rect.w = req->dst_rect.h;
 		dst_rect.h = req->dst_rect.w;
+	} else {
+		dst_rect = req->dst_rect;
 	}
 
-	if ((req->src_rect.w == dst_rect.w) && (req->src_rect.h == dst_rect.h)
-	    && !(req->flags & MDP_BLUR)) {
+	if (likely(req->src_rect.w == dst_rect.w && req->src_rect.h == dst_rect.h &&
+		   !(req->flags & MDP_BLUR))) {
 		regs->phasex_init = 0;
 		regs->phasey_init = 0;
 		regs->phasex_step = 0;
